@@ -11,7 +11,7 @@ RUN dnf --disablerepo=getpagespeed* update -y
 RUN dnf clean all
 
 # Set a meaningful label for the image
-LABEL maintainer="your-email@example.com"
+LABEL maintainer="info+el8@getpagespeed.com"
 LABEL description="CentOS 8 with GetPageSpeed LTS repository configured for extended support (x86_64 and aarch64)"
 
 # Set default command to bash

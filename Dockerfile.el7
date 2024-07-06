@@ -11,7 +11,7 @@ RUN yum --disablerepo=getpagespeed* update -y
 RUN yum clean all
 
 # Set a meaningful label for the image
-LABEL maintainer="your-email@example.com"
+LABEL maintainer="info+el7@getpagespeed.com"
 LABEL description="CentOS 7 with GetPageSpeed LTS repository configured for extended support (x86_64 and aarch64)"
 
 # Set default command to bash
