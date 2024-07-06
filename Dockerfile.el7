@@ -1,0 +1,18 @@
+# Start with the official CentOS 7 image
+FROM centos:7
+
+# Add GetPageSpeed LTS repository
+RUN yum install -y https://extras.getpagespeed.com/release-latest.rpm
+
+# Update all packages to ensure the system is up-to-date
+RUN yum update -y
+
+# Clean up YUM cache to reduce the image size
+RUN yum clean all
+
+# Set a meaningful label for the image
+LABEL maintainer="your-email@example.com"
+LABEL description="CentOS 7 with GetPageSpeed LTS repository configured for extended support (x86_64 and aarch64)"
+
+# Set default command to bash
+CMD ["/bin/bash"]
