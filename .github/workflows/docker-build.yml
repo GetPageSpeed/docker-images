@@ -12,6 +12,10 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.config.outputs.matrix) }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -25,39 +29,23 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build and push Docker image for CentOS 7
+      - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            getpagespeed/rhel:centos7-lts
-            getpagespeed/rhel:el7-lts
-            getpagespeed/rhel:latest # Adjust this if you want the latest to point to a specific version
-          file: ./Dockerfile.el7
-
-      - name: Build and push Docker image for CentOS 8
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            getpagespeed/rhel:centos8-lts
-            getpagespeed/rhel:el8-lts
-          file: ./Dockerfile.centos8
-
-      - name: Build and push Docker image for CentOS 9
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            getpagespeed/rhel:centos9-lts
-            getpagespeed/rhel:el9-lts
-          file: ./Dockerfile.centos9
+          tags: ${{ matrix.tags }}
+          file: ${{ matrix.file }}
 
       - name: Logout from Docker Hub
         run: docker logout
+
+  config:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.config.outputs.matrix }}
+    steps:
+      - name: Read configuration
+        id: config
+        run: echo "::set-output name=matrix::$(cat docker-matrix.json)"
