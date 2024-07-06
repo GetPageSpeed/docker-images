@@ -2,17 +2,17 @@
     "include": [
         {
             "name": "centos7-lts",
-            "file": "Dockerfile.centos7",
+            "file": "Dockerfile.el7",
             "tags": "getpagespeed/rhel:centos7-lts,getpagespeed/rhel:el7-lts"
         },
         {
             "name": "centos8-lts",
-            "file": "Dockerfile.centos8",
+            "file": "Dockerfile.el8",
             "tags": "getpagespeed/rhel:centos8-lts,getpagespeed/rhel:el8-lts"
         },
         {
             "name": "centos9-lts",
-            "file": "Dockerfile.centos9",
+            "file": "Dockerfile.el9",
             "tags": "getpagespeed/rhel:centos9-lts,getpagespeed/rhel:el9-lts"
         }
     ]
