@@ -4,6 +4,9 @@ FROM centos:7
 # Add GetPageSpeed LTS repository
 RUN yum install -y https://extras.getpagespeed.com/release-latest.rpm
 
+# Install EPEL repository
+RUN yum --disablerepo=getpagespeed* install epel-release -y
+
 # Update all packages to ensure the system is up-to-date
 RUN yum --disablerepo=getpagespeed* update -y
 
@@ -12,7 +15,7 @@ RUN yum clean all
 
 # Set a meaningful label for the image
 LABEL maintainer="info+el7@getpagespeed.com"
-LABEL description="CentOS 7 with GetPageSpeed LTS repository configured for extended support (x86_64 and aarch64)"
+LABEL description="RHEL 7 (CentOS) with GetPageSpeed LTS repository configured for extended support (x86_64 and aarch64)"
 
 # Set default command to bash
 CMD ["/bin/bash"]

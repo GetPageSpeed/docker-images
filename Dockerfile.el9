@@ -4,6 +4,9 @@ FROM rockylinux:9
 # Add GetPageSpeed LTS repository
 RUN dnf install -y https://extras.getpagespeed.com/release-latest.rpm
 
+# Install EPEL repository
+RUN dnf --disablerepo=getpagespeed* install epel-release -y
+
 # Update all packages to ensure the system is up-to-date
 RUN dnf --disablerepo=getpagespeed* update -y
 
@@ -12,7 +15,7 @@ RUN dnf clean all
 
 # Set a meaningful label for the image
 LABEL maintainer="info+el9@getpagespeed.com"
-LABEL description="RHEL 9 with GetPageSpeed LTS repository configured for extended support (x86_64 and aarch64)"
+LABEL description="RHEL 9 (Rocky Linux) with GetPageSpeed LTS repository configured for extended support (x86_64 and aarch64)"
 
 # Set default command to bash
 CMD ["/bin/bash"]
