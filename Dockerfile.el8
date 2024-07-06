@@ -1,0 +1,18 @@
+# Start with the official CentOS 8 image
+FROM centos:8
+
+# Add GetPageSpeed LTS repository
+RUN dnf install -y https://extras.getpagespeed.com/release-latest.rpm
+
+# Update all packages to ensure the system is up-to-date
+RUN dnf --disablerepo=getpagespeed* update -y
+
+# Clean up YUM cache to reduce the image size
+RUN dnf clean all
+
+# Set a meaningful label for the image
+LABEL maintainer="your-email@example.com"
+LABEL description="CentOS 8 with GetPageSpeed LTS repository configured for extended support (x86_64 and aarch64)"
+
+# Set default command to bash
+CMD ["/bin/bash"]
