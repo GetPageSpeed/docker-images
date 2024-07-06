@@ -9,12 +9,28 @@ on:
       - main
 
 jobs:
+  config:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.config.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Read configuration
+        id: config
+        run: |
+          matrix=$(cat docker-matrix.json | jq -c .)
+          echo "matrix=$matrix" >> $GITHUB_ENV
+        shell: bash
+
   build-and-push:
+    needs: config
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        include: ${{ fromJson(needs.config.outputs.matrix) }}
+        include: ${{ fromJson(env.matrix) }}
 
     steps:
       - name: Checkout code
@@ -40,12 +56,3 @@ jobs:
 
       - name: Logout from Docker Hub
         run: docker logout
-
-  config:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.config.outputs.matrix }}
-    steps:
-      - name: Read configuration
-        id: config
-        run: echo "::set-output name=matrix::$(cat docker-matrix.json)"
