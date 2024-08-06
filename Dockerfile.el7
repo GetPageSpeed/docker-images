@@ -4,8 +4,8 @@ FROM centos:7
 # Add GetPageSpeed LTS repository
 RUN yum install -y https://extras.getpagespeed.com/release-latest.rpm
 
-# Install EPEL repository
-RUN yum --disablerepo=getpagespeed* install epel-release -y
+# Install EPEL repository from GetPageSpeed (points to Fedora archive)
+RUN yum install epel-release -y
 
 # Update all packages to ensure the system is up-to-date
 RUN yum --disablerepo=getpagespeed* update -y

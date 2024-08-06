@@ -56,3 +56,7 @@ This repository is provided under the same terms as the CentOS project.
 
 By using the repository name `GetPageSpeed/docker-images`, you clearly communicate the purpose of the repository. 
 The structure and documentation ensure that it is easy to navigate, use, and contribute to, making it a robust solution for maintaining Docker images with GetPageSpeed LTS support.
+
+### TODO
+
+Rebuild upon release of `getpagespeed-extras-release` to bring the latest changes in the GetPageSpeed configuration.
