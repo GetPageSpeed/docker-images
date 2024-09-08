@@ -19,7 +19,7 @@ jobs:
 
       - name: Set matrix data
         id: set-matrix
-        run: echo "matrix=$(jq -c . < ./matrix.json)" >> $GITHUB_OUTPUT
+        run: echo "matrix=$(jq -c . < ./docker-matrix.json)" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJson(needs.configure.outputs.matrix).include }}  # Main matrix from JSON
+        include: ${{ fromJson(needs.configure.outputs.matrix) }}
         platform: [linux/amd64, linux/arm64]  # Nested matrix for platforms
 
     steps:
