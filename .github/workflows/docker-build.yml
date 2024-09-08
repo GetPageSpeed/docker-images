@@ -21,14 +21,12 @@ jobs:
         id: set-matrix
         run: echo "matrix=$(jq -c . < ./docker-matrix.json)" >> $GITHUB_OUTPUT
 
-  build:
+  build-amd64:
     runs-on: ubuntu-latest
     needs: configure
     strategy:
       fail-fast: false
-      matrix:
-        name: ${{ fromJson(needs.configure.outputs.matrix.name) }}
-        platform: [linux/amd64, linux/arm64]  # Nested matrix for platforms
+      matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
 
     steps:
       - name: Checkout code
@@ -43,25 +41,51 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image for amd64
         uses: docker/build-push-action@v4
         with:
           context: .
-          platforms: ${{ matrix.platform }}  # Use the platform from the nested matrix
-          push: true
-          tags: ${{ matrix.tags }}-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}  # Generate tag per platform
-          file: ${{ matrix.file }}  # Use Dockerfile from matrix.json
+          platforms: linux/amd64
+          tags: getpagespeed/lts:${{ matrix.name }}-amd64
+          file: ${{ matrix.file }}
+
+      - name: Logout from Docker Hub
+        run: docker logout
+
+  build-arm64:
+    runs-on: ubuntu-latest
+    needs: configure
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image for arm64
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          platforms: linux/arm64
+          tags: getpagespeed/lts:${{ matrix.name }}-arm64
+          file: ${{ matrix.file }}
 
       - name: Logout from Docker Hub
         run: docker logout
 
   combine-manifest:
     runs-on: ubuntu-latest
-    needs: build
-    strategy:
-      matrix:
-        include: ${{ fromJson(needs.configure.outputs.matrix).include }}
-
+    needs: [build-amd64, build-arm64]  # Wait for both architecture builds to complete
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -71,6 +95,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Combine manifests for multi-architecture image and push
+        run: |
+          docker buildx imagetools create \
+            --tag ${{ matrix.tags }} \  # Tag for multi-architecture image
+            getpagespeed/lts:${{ matrix.name }}-amd64 \
+            getpagespeed/lts:${{ matrix.name }}-arm64
 
       - name: Logout from Docker Hub
         run: docker logout
