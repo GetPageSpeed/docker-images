@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJson(needs.configure.outputs.matrix) }}
+        name: ${{ fromJson(needs.configure.outputs.matrix.name) }}
         platform: [linux/amd64, linux/arm64]  # Nested matrix for platforms
 
     steps:
