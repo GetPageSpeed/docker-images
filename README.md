@@ -9,6 +9,11 @@ These images are configured to provide extended support and updates for CentOS/R
 - `getpagespeed/lts:el8`
 - `getpagespeed/lts:el9`
 
+## Supported architectures
+
+- `x86_64`
+- `aarch64`
+
 ## Usage
 
 ### Pull the Image
