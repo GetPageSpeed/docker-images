@@ -21,7 +21,7 @@ jobs:
         id: set-matrix
         run: echo "matrix=$(jq -c . < ./docker-matrix.json)" >> $GITHUB_OUTPUT
 
-  build-amd64:
+  build-and-push:
     runs-on: ubuntu-latest
     needs: configure
     strategy:
@@ -41,67 +41,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image for amd64
+      - name: Build and push multi-architecture Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
-          platforms: linux/amd64
-          tags: getpagespeed/lts:${{ matrix.name }}-amd64
-          file: ${{ matrix.file }}
-
-      - name: Logout from Docker Hub
-        run: docker logout
-
-  build-arm64:
-    runs-on: ubuntu-latest
-    needs: configure
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build Docker image for arm64
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          platforms: linux/arm64
-          tags: getpagespeed/lts:${{ matrix.name }}-arm64
-          file: ${{ matrix.file }}
-
-      - name: Logout from Docker Hub
-        run: docker logout
-
-  combine-manifest:
-    runs-on: ubuntu-latest
-    needs: [build-amd64, build-arm64]  # Wait for both architecture builds to complete
-    steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Combine manifests for multi-architecture image and push
-        run: |
-          docker buildx imagetools create \
-            --tag ${{ matrix.tags }} \  # Tag for multi-architecture image
-            getpagespeed/lts:${{ matrix.name }}-amd64 \
-            getpagespeed/lts:${{ matrix.name }}-arm64
+          platforms: linux/amd64,linux/arm64  # Specify both platforms here
+          push: true
+          tags: ${{ matrix.tags }}  # Example: "yourdockerhubuser/yourimage:latest"
+          file: ${{ matrix.file }}  # Specify the Dockerfile location if needed
 
       - name: Logout from Docker Hub
         run: docker logout
