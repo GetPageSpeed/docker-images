@@ -3,17 +3,20 @@
         {
             "name": "el7",
             "file": "Dockerfile.el7",
-            "tags": "getpagespeed/lts:el7,getpagespeed/lts:centos7"
+            "tags": "getpagespeed/lts:el7,getpagespeed/lts:centos7",
+            "platform": ["linux/amd64", "linux/arm64"]
         },
         {
             "name": "el8",
             "file": "Dockerfile.el8",
-            "tags": "getpagespeed/lts:el8,getpagespeed/lts:centos8"
+            "tags": "getpagespeed/lts:el8,getpagespeed/lts:centos8",
+            "platform": ["linux/amd64", "linux/arm64"]
         },
         {
             "name": "el9",
             "file": "Dockerfile.el9",
-            "tags": "getpagespeed/lts:el9,getpagespeed/lts:centos9"
+            "tags": "getpagespeed/lts:el9,getpagespeed/lts:centos9",
+            "platform": ["linux/amd64", "linux/arm64"]
         }
     ]
 }
